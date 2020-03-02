@@ -41,10 +41,17 @@ class Dog
   end
 
   def self.create(name:, breed:)
-    dog = Dog.new(name, breed)
+    dog_hash = {:name => name, :breed => breed}
+    dog = Dog.new(dog_hash)
     dog.save
     dog 
   end 
+  
+  def self.new_from_db(row)
+    dog_hash = {:id => row[0], :name => row[1], :breed => row[2]}
+    new_dog = Dog.new(dog_hash)
+  end
+    
 
     
 end 
