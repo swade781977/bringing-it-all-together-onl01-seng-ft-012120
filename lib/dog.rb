@@ -48,12 +48,27 @@ class Dog
   end 
   
   def self.new_from_db(row)
-    dog_hash = {:id => row[0], :name => row[1], :breed => row[2]}
-    new_dog = Dog.new(dog_hash)
+    new_dog = Dog.new(id: row[0], name: row[1], breed: row[2])
   end
     
-
+  def self.find_by_id(id)
+    sql = <<-SQL
+      SELECT * FROM dogs WHERE id = ? LIMIT 1
+    SQL
     
+    DB[:conn].execute(sql, id).map do |row|
+      self.new_from_db(row)
+    end.first 
+  end 
+  
+  def self.find_or_create_by(name:, breed:)
+    dog = DB[:conn].execute("SELECT * FROM dogs WHERE name = ? AND breed = ?", name, breed)
+    if !dog.empty?
+      dog = Dog.new(dog)
+    else
+      dog = Dog.create(name, breed)
+    end 
+  end
 end 
     
 
