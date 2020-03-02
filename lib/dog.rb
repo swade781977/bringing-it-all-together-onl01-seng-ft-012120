@@ -1,3 +1,5 @@
+require_relative '../config/environment.rb'
+
 class Dog
 
   attr_accessor :name, :breed, :id
@@ -5,7 +7,6 @@ class Dog
   def initialize(attributes)
     if attributes
       attributes.each{|k,v| self.send(("#{k}="), v)}
-      end
     end
   end
 
@@ -37,4 +38,14 @@ class Dog
       @id = DB[:conn].execute("SELECT last_insert_rowid() FROM dogs")[0][0]
     end
   end
+
+  def self.create(name:, breed:)
+    dog = Dog.new(name, breed)
+    dog.save
+    dog 
+  end 
+
+
+end 
+    
 
