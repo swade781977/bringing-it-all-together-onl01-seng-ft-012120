@@ -1,13 +1,15 @@
+require 'pry'
 require_relative '../config/environment.rb'
 
 class Dog
 
   attr_accessor :name, :breed, :id
+  #attr_reader :id
 
-  def initialize(attributes)
-    if attributes
-      attributes.each{|k,v| self.send(("#{k}="), v)}
-    end
+  def initialize(id: nil, name:, breed:)
+    @id = id
+    @name = name
+    @breed = breed 
   end
 
   def self.create_table
@@ -64,10 +66,17 @@ class Dog
   def self.find_or_create_by(name:, breed:)
     dog = DB[:conn].execute("SELECT * FROM dogs WHERE name = ? AND breed = ?", name, breed)
     if !dog.empty?
-      dog = Dog.new(dog)
+      dog = Dog.new(id: dog[0][0], name: dog[0][1], breed: dog[0][2])
     else
-      dog = Dog.create(name, breed)
-    end 
+      dog = Dog.create(name: name, breed: breed)
+    end
+    dog
+  end
+  
+  def self.find_by_name(name)
+    sql = "SELECT * FROM dogs WHERE name = ?"
+    result = DB[:conn].execute(sql, name)
+    Dog.new(id: result[0][0], name: result[0][1], breed: result[0][1])
   end
 end 
     
